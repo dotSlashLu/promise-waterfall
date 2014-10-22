@@ -1,7 +1,7 @@
 #Promise-waterfall
 Promise-waterfall extends promise utilities with sequential flow control like [async.waterfall]((https://github.com/caolan/async#waterfalltasks-callback)). 
 
-Since `Promise.all(promiseArr)` || `Promise.spread(promiseArr)` execs simultaneously, each of the functions in the promiseArr cannot depends on another, and if you want promises execute in order or some of the promises need the resolved value of another, this library is for you.
+Since `Promise.all(promiseArr)` || `Promise.spread(promiseArr)` execs promises simultaneously, each of the functions in the promiseArr cannot depend on another, and if you want promises execute in order or some of the promises need the resolved value of another, this library is for you.
 
 ## Usage
 

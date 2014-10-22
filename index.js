@@ -1,9 +1,19 @@
 (function (globalVar){
 
+  function isPromise(object) {
+    // from Q.js
+    return object === Object(object) &&
+        typeof object.promiseDispatch === "function" &&
+        typeof object.inspect === "function";
+  }
+
   function waterfall(list) {
     // malformed argument
-    if (!Array.isArray(list) || typeof list.reduce !== "function" || list.length < 1) {
-      throw new Error("Array with reduce funciton is needed.");
+    if (!Array.isArray(list)                  // not an array
+      || typeof list.reduce !== "function"    // change your javascript engine
+      || list.length < 1                      // empty array
+    ) {
+      throw new Error("Array with reduce function is needed.");
       return;
     }
 
@@ -17,18 +27,22 @@
       if (isFirst) {
         if (typeof l != "function")
           throw new Error("List elements should be function to call.");
-        return l().then(r);
+
+        var lret = l();
+        if (!isPromise(lret))
+          throw new Error("Function return value should be a promise.");
+        else
+          return lret.then(r);
       }
       
       // other rounds
       // l is a promise now
       // priviousPromiseList.then(nextFunction)
       else {
-        try {
+        if (!isPromise(l))
+          throw new Error("Function return value should be a promise.");
+        else 
           return l.then(r);
-        } catch (e) {
-          throw new Error(e);
-        }
       }
     })
   }
