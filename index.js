@@ -7,7 +7,7 @@ function isPromise(obj) {
 // return a rejected promise when error occurs
 function reject(err) {
   return new Promise(function(resolve, reject){
-    return reject("promise-waterfall: " + err);
+    return reject(new Error("promise-waterfall: " + err));
   });
 }
 
