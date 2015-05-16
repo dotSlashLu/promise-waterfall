@@ -4,21 +4,6 @@ function isPromise(obj) {
   return obj && typeof obj.then === 'function';
 }
 
-// return a rejected promise when error occurs
-function reject(err) {
-  return new Promise(function(resolve, reject){
-    return reject(new Error("promise-waterfall: " + err));
-  });
-}
-
-// if argument function doesn't return a promise
-// return a promise resolving the return value
-function resolve(val) {
-  return new Promise(function(resolve, reject){
-    return resolve(val);
-  });
-}
-
 function waterfall(list) {
   // malformed argument
   list = Array.prototype.slice.call(list);
@@ -26,13 +11,13 @@ function waterfall(list) {
       || typeof list.reduce !== "function"    // update your javascript engine
       || list.length < 1                      // empty array
      ) {
-    return reject("Array with reduce function is needed.");
+    return Promise.reject("Array with reduce function is needed.");
   }
 
   if (list.length == 1) {
     if (typeof list[0] != "function")
-      return reject("First element of the array should be a function, got " + typeof list[0]);
-    return resolve(list[0]());
+      return Promise.reject("First element of the array should be a function, got " + typeof list[0]);
+    return Promise.resolve(list[0]());
   }
 
   return list.reduce(function(l, r){
@@ -41,11 +26,11 @@ function waterfall(list) {
     var isFirst = (l == list[0]);
     if (isFirst) {
       if (typeof l != "function")
-        return reject("List elements should be function to call.");
+        return Promise.reject("List elements should be function to call.");
 
       var lret = l();
       if (!isPromise(lret))
-        return reject("Function return value should be a promise.");
+        return Promise.reject("Function return value should be a promise.");
       else
         return lret.then(r);
     }
@@ -55,7 +40,7 @@ function waterfall(list) {
     // priviousPromiseList.then(nextFunction)
     else {
       if (!isPromise(l))
-        reject("Function return value should be a promise.");
+        Promise.reject("Function return value should be a promise.");
       else 
         return l.then(r);
     }
